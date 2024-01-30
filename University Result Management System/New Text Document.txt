@@ -1,0 +1,17 @@
+<div class="container mt-5">
+    <!-- Admin registration form -->
+    <h2 class="mb-4">Admin Registration Form</h2>
+    <form action="admin_registration.php" method="POST">
+        <!-- Add form fields for admin registration (e.g., username, password, etc.) -->
+        <!-- Modify the form fields according to your requirements -->
+        <div class="mb-3">
+            <label for="admin_username" class="form-label">Admin Username</label>
+            <input type="text" class="form-control" id="admin_username" name="admin_username" required>
+        </div>
+        <div class="mb-3">
+            <label for="admin_password" class="form-label">Admin Password</label>
+            <input type="password" class="form-control" id="admin_password" name="admin_password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Register Admin</button>
+    </form>
+</div>

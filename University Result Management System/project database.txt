@@ -1,0 +1,66 @@
+-- Table for User Management
+CREATE TABLE Users (
+    UserID INT PRIMARY KEY AUTO_INCREMENT,
+    UserName VARCHAR(255) NOT NULL UNIQUE,
+    Password VARCHAR(255) NOT NULL,
+    UserRole ENUM('admin', 'teacher', 'student') NOT NULL
+);
+
+-- Table for Teacher Profile
+CREATE TABLE Teachers (
+    TeacherID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT UNIQUE,
+    Name VARCHAR(255),
+    Email VARCHAR(255),
+    PictureURL VARCHAR(255),
+    Designation VARCHAR(255),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+-- Table for Student Profile
+CREATE TABLE Students (
+    StudentID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT UNIQUE,
+    Name VARCHAR(255),
+    Email VARCHAR(255),
+    PictureURL VARCHAR(255),
+    Phone VARCHAR(15),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+-- Table for Course Management
+CREATE TABLE Courses (
+    CourseID INT PRIMARY KEY AUTO_INCREMENT,
+    CourseName VARCHAR(255) NOT NULL,
+    TeacherID INT,
+    FOREIGN KEY (TeacherID) REFERENCES Teachers(TeacherID)
+);
+
+-- Table for Result Management
+CREATE TABLE Results (
+    ResultID INT PRIMARY KEY AUTO_INCREMENT,
+    StudentID INT,
+    CourseID INT,
+    CTMarks DECIMAL(5,2),
+    MidMarks DECIMAL(5,2),
+    FinalMarks DECIMAL(5,2),
+    AssignmentMarks DECIMAL(5,2),
+    FOREIGN KEY (StudentID) REFERENCES Students(StudentID),
+    FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
+);
+
+-- Trigger to calculate overall CGPA when a new result is added
+DELIMITER //
+CREATE TRIGGER CalculateCGPA
+AFTER INSERT ON Results
+FOR EACH ROW
+BEGIN
+    UPDATE Students
+    SET CGPA = (SELECT AVG((CTMarks + MidMarks + FinalMarks + AssignmentMarks) / 4) FROM Results WHERE StudentID = NEW.StudentID)
+    WHERE StudentID = NEW.StudentID;
+END;
+//
+DELIMITER ;
+
+-- Add CGPA column to Students table
+ALTER TABLE Students ADD COLUMN CGPA DECIMAL(5,2);
